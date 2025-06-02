@@ -1,25 +1,28 @@
-name: Simulate Status Check
+name: Simulated Status Check
 
 on:
   pull_request:
     types: [opened, synchronize, reopened]
 
 jobs:
-  simulate-check:
+  check-status:
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: write
-      pull-requests: write
-      statuses: write  # ✅ Needed to set status checks
-
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Run Simulated Status Check
-        run: python .github/scripts/simulate_status_check.py
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Install Dependencies
+        run: pip install requests
+
+      - name: Simulate Status Check
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: python .github/scripts/simulate_status_check.py
